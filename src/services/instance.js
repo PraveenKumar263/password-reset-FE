@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Define the base url
-const baseURL = "http://localhost:3001/api/v1";
+const baseURL = process.env.BACKEND_URL;
 
 // Define the axios instance
 const instance = axios.create({
