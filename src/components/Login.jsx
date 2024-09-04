@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import authServices from '../services/authServices';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const Login = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   // Handle form field changes
@@ -29,7 +31,7 @@ const Login = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
@@ -40,8 +42,20 @@ const Login = () => {
     // Clear errors
     setErrors({});
 
-    console.log('Form Data:', formData);
-    navigate('/login');
+    try {
+      await authServices.login(formData);
+      setMessage('Login successful. Redirecting to signup page...');
+      
+      // Clear forms
+      setFormData({ email: '', password: '' })
+
+      // Navigate to signup page after 2 seconds
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (error) {
+      setMessage('An error occurred during login. Please try again.');
+    }
   };
 
   return (
@@ -51,8 +65,13 @@ const Login = () => {
           <div className="card shadow-lg rounded-3 p-3 mt-3">
             <div className="card-body p-5">
               <h1 className="text-center mb-4">Login</h1>
+              {message && (
+                <div className={`alert ${message.startsWith('Login successful') ? 'alert-success' : 'alert-danger'}`} role="alert">
+                  {message}
+                </div>
+              )}
               <form onSubmit={handleSubmit}>
-              <div className="mb-3">
+                <div className="mb-3">
                   <label htmlFor="email" className="form-label">Email Address</label>
                   <input
                     type="email"

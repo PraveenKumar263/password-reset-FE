@@ -1,10 +1,9 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import SignUp from './components/Signup'
 import Login from './components/Login'
+import ForgotPassword from './components/ForgotPassword'
+import ResetPassword from './components/ResetPassword'
 
 function App() {
 
@@ -13,6 +12,8 @@ function App() {
         <Routes>
             <Route path="/" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/resetPassword" element={<ResetPassword />} />
         </Routes>
       </>
   )

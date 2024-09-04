@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import authServices from '../services/authServices';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const SignUp = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   // Handle form field changes
@@ -33,7 +35,7 @@ const SignUp = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
@@ -44,8 +46,17 @@ const SignUp = () => {
     // Clear errors
     setErrors({});
 
-    console.log('Form Data:', formData);
-    navigate('/login');
+    try {
+      await authServices.register(formData);
+      setMessage('Registration successful. Redirecting to login page...');
+
+      // Navigate to login page after 2 seconds
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (error) {
+      setMessage('An error occurred during registration. Please try again.');
+    }
   };
 
   return (
@@ -55,6 +66,11 @@ const SignUp = () => {
           <div className="card shadow-lg rounded-3 p-3 mt-3">
             <div className="card-body p-5">
               <h1 className="text-center mb-4">Sign Up</h1>
+              {message && (
+                <div className={`alert ${message.startsWith('Registration successful') ? 'alert-success' : 'alert-danger'}`} role="alert">
+                  {message}
+                </div>
+              )}
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label htmlFor="firstName" className="form-label">First Name</label>
