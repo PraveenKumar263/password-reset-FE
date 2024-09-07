@@ -8,6 +8,7 @@ const ResetPassword = () => {
     confirmPassword: ''
   });
 
+  const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
   const [token, setToken] = useState('');
   const [expires, setExpires] = useState('');
@@ -18,7 +19,7 @@ const ResetPassword = () => {
     // Extract token from the URL query params
     const queryParams = new URLSearchParams(location.search);
     const tokenFromUrl = queryParams.get('token');
-    console.log(queryParams)
+
     if (tokenFromUrl) {
       setToken(tokenFromUrl);
     }
@@ -58,9 +59,14 @@ const ResetPassword = () => {
 
     try {
       await authServices.resetPassword(token, formData.newPassword);
-      navigate('/login');
+      setMessage('Password reset successful. Redirecting to login page...');
+
+      // Navigate to login page after 2 seconds
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (error) {
-      setErrors({ global: 'Failed to reset password. Please try again.' });
+      setMessage('An error occurred during password reset. Please try again.');
     }
   };
 
@@ -71,6 +77,11 @@ const ResetPassword = () => {
           <div className="card shadow-lg rounded-3 p-3 mt-3">
             <div className="card-body p-5">
               <h1 className="text-center mb-4">Reset Password</h1>
+              {message && (
+                <div className={`alert ${message.startsWith('Password reset') ? 'alert-success' : 'alert-danger'}`} role="alert">
+                  {message}
+                </div>
+              )}
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label htmlFor="newPassword" className="form-label">New Password</label>
